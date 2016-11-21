@@ -141,6 +141,14 @@
 -type organizationally_specific() :: #organizationally_specific{}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RCI
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-define(RCI, 128).
+
+-record(rci, { value = <<>> :: binary() }).
+-type rci() :: #rci{}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LLDP Frame Format
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
