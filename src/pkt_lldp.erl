@@ -109,15 +109,18 @@ encode_pdu(#port_id{ subtype = SubType, value = Value }) ->
 encode_pdu(#ttl{ value = Value }) ->
     <<?TTL:8, 2:8, Value:16>>;
 encode_pdu(#port_desc{ value = Value }) ->
-    Value2 = encode_string(Value),
+%%    Value2 = encode_string(Value),
+    Value2 = Value,
     Length = byte_size(Value2),
     <<?PORT_DESC:8, Length:8, Value2:Length/bytes>>;
 encode_pdu(#system_name{ value = Value }) ->
-    Value2 = encode_string(Value),
+%%    Value2 = encode_string(Value),
+    Value2 = Value,
     Length = byte_size(Value2),
     <<?SYSTEM_NAME:8, Length:8, Value2:Length/bytes>>;
 encode_pdu(#system_desc{ value = Value }) ->
-    Value2 = encode_string(Value),
+%%    Value2 = encode_string(Value),
+    Value2 = Value,
     Length = byte_size(Value2),
     <<?SYSTEM_DESC:8, Length:8, Value2:Length/bytes>>;
 encode_pdu(#system_capability{ system = System,
