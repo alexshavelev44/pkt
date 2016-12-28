@@ -41,17 +41,11 @@ codec(#lldp{ pdus = Pdus }) -> pad_to(50, encode(Pdus, <<>>)).
 decode(<<?END_OF_LLDPDU:8, 0:8, _Tail/bytes>>, Acc) ->
     Acc2 = [end_of_lldpdu | Acc],
     #lldp{ pdus = lists:reverse(Acc2) };
-decode(<<?CHASSIS_ID:8, Length:8, SubTypeInt:8, Tail/bytes>>, Acc) ->
-    ValueLen = Length - 1,
-    <<Value:ValueLen/bytes, Rest/bytes>> = Tail,
-    SubType = map(chassis_id, SubTypeInt),
-    Pdu = #chassis_id{ subtype = SubType, value = Value },
+decode(<<?CHASSIS_ID:8, Length:8, Value:Length/bytes, Rest/bytes>>, Acc) ->
+    Pdu = #chassis_id{value = Value },
     decode(Rest, [Pdu | Acc]);
-decode(<<?PORT_ID:8, Length:8, SubTypeInt:8, Tail/bytes>>, Acc) ->
-    ValueLen = Length - 1,
-    <<Value:ValueLen/bytes, Rest/bytes>> = Tail,
-    SubType = map(port_id, SubTypeInt),
-    Pdu = #port_id{ subtype = SubType, value = Value },
+decode(<<?PORT_ID:8, Length:8, Value:Length/bytes, Rest/bytes>>, Acc) ->
+    Pdu = #port_id{value = Value},
     decode(Rest, [Pdu | Acc]);
 decode(<<?TTL:8, Length:8, Tail/bytes>>, Acc) ->
     BitLen = Length * 8,
@@ -94,14 +88,12 @@ encode([Pdu | Rest], Binary) ->
 
 encode_pdu(end_of_lldpdu) ->
     <<?END_OF_LLDPDU:8, 0:8>>;
-encode_pdu(#chassis_id{ subtype = SubType, value = Value }) ->
-    SubTypeInt = map(chassis_id, SubType),
+encode_pdu(#chassis_id{value = Value }) ->
     Length = byte_size(Value),
-    <<?CHASSIS_ID:8, (Length + 1):8, SubTypeInt:8, Value:Length/bytes>>;
-encode_pdu(#port_id{ subtype = SubType, value = Value }) ->
-    SubTypeInt = map(port_id, SubType),
+    <<?CHASSIS_ID:8, Length:8, Value:Length/bytes>>;
+encode_pdu(#port_id{value = Value }) ->
     Length = byte_size(Value),
-    <<?PORT_ID:8, (Length + 1):8, SubTypeInt:8, Value:Length/bytes>>;
+    <<?PORT_ID:8, Length:8, Value:Length/bytes>>;
 encode_pdu(#ttl{ value = Value }) ->
     <<?TTL:8, 2:8, Value:16>>;
 encode_pdu(#port_desc{ value = Value }) ->
