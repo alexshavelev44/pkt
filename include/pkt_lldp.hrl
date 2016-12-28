@@ -89,16 +89,16 @@
 % System Description
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--define(SYSTEM_DESC, 6).
+-define(DOMAIN, 6).
 
--record(system_desc, { value = <<>> :: binary() }).
--type system_desc() :: #system_desc{}.
+-record(domain, { value = <<>> :: binary() }).
+-type system_desc() :: #domain{}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % System Capability
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--define(SYSTEM_CAPABILITY, 7).
+-define(NODEROLE, 7).
 
 -type capability_flag() :: other
                          | repeater
@@ -118,9 +118,8 @@
 -define(SYSTEM_CAP_DOCSIS,    1 bsl 6).
 -define(SYSTEM_CAP_STATION,   1 bsl 7).
 
--record(system_capability, { system  = [] :: [capability_flag()],
-                             enabled = [] :: [capability_flag()] }).
--type system_capability() :: #system_capability{}.
+-record(noderole, { value }).
+-type system_capability() :: #noderole{}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Management Address

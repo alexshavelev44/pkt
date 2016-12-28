@@ -66,16 +66,12 @@ decode(<<?SYSTEM_NAME:8, Length:8,
          Value:Length/bytes, Rest/bytes>>, Acc) ->
     Pdu = #system_name{ value = decode_string(Value) },
     decode(Rest, [Pdu | Acc]);
-decode(<<?SYSTEM_DESC:8, Length:8,
+decode(<<?DOMAIN:8, Length:8,
          Value:Length/bytes, Rest/bytes>>, Acc) ->
-    Pdu = #system_desc{ value = decode_string(Value) },
+    Pdu = #domain{ value = decode_string(Value) },
     decode(Rest, [Pdu | Acc]);
-decode(<<?SYSTEM_CAPABILITY:8, _Length:8, Tail/bytes>>, Acc) ->
-    <<SystemBin:16/bits, EnabledBin:16/bits, Rest/bytes>> = Tail,
-    System = binary_to_flags(system_capability, SystemBin),
-    Enabled = binary_to_flags(system_capability, EnabledBin),
-    Pdu = #system_capability{ system = System,
-                              enabled = Enabled },
+decode(<<?NODEROLE:8, _Length:8, Value:8, Rest/bytes>>, Acc) ->
+    Pdu = #noderole{value = Value},
     decode(Rest, [Pdu | Acc]);
 decode(<<?MANAGEMENT_ADDRESS:8, Length:8,
          Value:Length/bytes, Rest/bytes>>, Acc) ->
@@ -118,17 +114,14 @@ encode_pdu(#system_name{ value = Value }) ->
     Value2 = Value,
     Length = byte_size(Value2),
     <<?SYSTEM_NAME:8, Length:8, Value2:Length/bytes>>;
-encode_pdu(#system_desc{ value = Value }) ->
+encode_pdu(#domain{ value = Value }) ->
 %%    Value2 = encode_string(Value),
     Value2 = Value,
     Length = byte_size(Value2),
-    <<?SYSTEM_DESC:8, Length:8, Value2:Length/bytes>>;
-encode_pdu(#system_capability{ system = System,
-                               enabled = Enabled }) ->
-    SystemBin = flags_to_binary(system_capability, System, 16),
-    EnabledBin = flags_to_binary(system_capability, Enabled, 16),
-    Value = <<SystemBin:2/bytes, EnabledBin:2/bytes>>,
-    <<?SYSTEM_CAPABILITY:8, 4:8, Value:4/bytes>>;
+    <<?DOMAIN:8, Length:8, Value2:Length/bytes>>;
+encode_pdu(#noderole{value = Value}) ->
+
+    <<?NODEROLE:8, 1:8, Value:8>>;
 encode_pdu(#management_address{ value = Value }) ->
     Length = byte_size(Value),
     <<?MANAGEMENT_ADDRESS:8, Length:8, Value:Length/bytes>>;
@@ -170,43 +163,43 @@ map(port_id, agent_circuit_id) -> ?PORT_ID_AGENT_CIRC_ID;
 map(port_id, locally_assigned) -> ?PORT_ID_LOCALLY.
 
 % Encode Bitmap flags
-flags_to_binary(Type, Flags, BitSize) ->
-    flags_to_binary(Type, Flags, BitSize, <<0:BitSize>>).
+%%flags_to_binary(Type, Flags, BitSize) ->
+%%    flags_to_binary(Type, Flags, BitSize, <<0:BitSize>>).
+%%
+%%flags_to_binary(_, [], _, Binary) -> Binary;
+%%flags_to_binary(Type, [Flag | Rest], BitSize, Binary) ->
+%%    <<FlagsInt:BitSize>> = Binary,
+%%    FlagInt = proplists:get_value(Flag, enums(Type)),
+%%    FlagsInt2 = FlagsInt bor FlagInt,
+%%    flags_to_binary(Type, Rest, BitSize, <<FlagsInt2:BitSize>>).
+%%
+%%% Decode Bitmap Flags
+%%binary_to_flags(Type, Binary) ->
+%%    BitSize = bit_size(Binary),
+%%    <<FlagsInt:BitSize>> = Binary,
+%%    Keys = proplists:get_keys(enums(Type)),
+%%    binary_to_flags(Type, FlagsInt, Keys, []).
 
-flags_to_binary(_, [], _, Binary) -> Binary;
-flags_to_binary(Type, [Flag | Rest], BitSize, Binary) ->
-    <<FlagsInt:BitSize>> = Binary,
-    FlagInt = proplists:get_value(Flag, enums(Type)),
-    FlagsInt2 = FlagsInt bor FlagInt,
-    flags_to_binary(Type, Rest, BitSize, <<FlagsInt2:BitSize>>).
-
-% Decode Bitmap Flags
-binary_to_flags(Type, Binary) ->
-    BitSize = bit_size(Binary),
-    <<FlagsInt:BitSize>> = Binary,
-    Keys = proplists:get_keys(enums(Type)),
-    binary_to_flags(Type, FlagsInt, Keys, []).
-
-binary_to_flags(_, _, [], Flags) -> lists:reverse(Flags);
-binary_to_flags(Type, FlagsInt, [Flag | Rest], Flags) ->
-    FlagInt = proplists:get_value(Flag, enums(Type)),
-    case 0 /= FlagInt band FlagsInt of
-        true ->
-            binary_to_flags(Type, FlagsInt, Rest, [Flag | Flags]);
-        false ->
-            binary_to_flags(Type, FlagsInt, Rest, Flags)
-    end.
+%%binary_to_flags(_, _, [], Flags) -> lists:reverse(Flags);
+%%binary_to_flags(Type, FlagsInt, [Flag | Rest], Flags) ->
+%%    FlagInt = proplists:get_value(Flag, enums(Type)),
+%%    case 0 /= FlagInt band FlagsInt of
+%%        true ->
+%%            binary_to_flags(Type, FlagsInt, Rest, [Flag | Flags]);
+%%        false ->
+%%            binary_to_flags(Type, FlagsInt, Rest, Flags)
+%%    end.
 
 % system capability enums
-enums(system_capability) ->
-    [{ other,             ?SYSTEM_CAP_OTHER },
-     { repeater,          ?SYSTEM_CAP_REPEATER },
-     { bridge,            ?SYSTEM_CAP_BRIDGE },
-     { wlan_access_point, ?SYSTEM_CAP_WLANAP },
-     { router,            ?SYSTEM_CAP_ROUTER },
-     { telephone,         ?SYSTEM_CAP_TELEPHONE },
-     { docsis,            ?SYSTEM_CAP_DOCSIS },
-     { station_only,      ?SYSTEM_CAP_STATION }].
+%%enums(system_capability) ->
+%%    [{ other,             ?SYSTEM_CAP_OTHER },
+%%     { repeater,          ?SYSTEM_CAP_REPEATER },
+%%     { bridge,            ?SYSTEM_CAP_BRIDGE },
+%%     { wlan_access_point, ?SYSTEM_CAP_WLANAP },
+%%     { router,            ?SYSTEM_CAP_ROUTER },
+%%     { telephone,         ?SYSTEM_CAP_TELEPHONE },
+%%     { docsis,            ?SYSTEM_CAP_DOCSIS },
+%%     { station_only,      ?SYSTEM_CAP_STATION }].
 
 % padding binary to byte length
 pad_to(ByteLen, Binary) ->
@@ -230,4 +223,4 @@ decode_string(Binary, Size) when Size >= 0 ->
 decode_string(_, _) ->
     <<>>.
 
-encode_string(Binary) -> <<Binary/bytes, 0:8>>.
+%%encode_string(Binary) -> <<Binary/bytes, 0:8>>.
