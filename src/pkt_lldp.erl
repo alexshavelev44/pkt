@@ -108,7 +108,7 @@ encode_pdu(#system_name{ value = Value }) ->
     Length = byte_size(Value2),
     <<?SYSTEM_NAME:8, Length:8, Value2:Length/bytes>>;
 encode_pdu(#domain{ value = Value }) ->
-    <<?DOMAIN:8, 2:8, Value:2/bytes>>;
+    <<?DOMAIN:8, 2:8, Value:16>>;
 encode_pdu(#noderole{value = Value}) ->
 
     <<?NODEROLE:8, 1:8, Value:8>>;
