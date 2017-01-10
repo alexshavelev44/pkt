@@ -60,9 +60,9 @@ decode(<<?SYSTEM_NAME:8, Length:8,
          Value:Length/bytes, Rest/bytes>>, Acc) ->
     Pdu = #system_name{ value = decode_string(Value) },
     decode(Rest, [Pdu | Acc]);
-decode(<<?DOMAIN:8, Length:8,
-         Value:Length/bytes, Rest/bytes>>, Acc) ->
-    Pdu = #domain{ value = decode_string(Value) },
+decode(<<?DOMAIN:8, 2:8,
+         Value:16, Rest/bytes>>, Acc) ->
+    Pdu = #domain{ value = Value },
     decode(Rest, [Pdu | Acc]);
 decode(<<?NODEROLE:8, _Length:8, Value:8, Rest/bytes>>, Acc) ->
     Pdu = #noderole{value = Value},
@@ -107,10 +107,7 @@ encode_pdu(#system_name{ value = Value }) ->
     Length = byte_size(Value2),
     <<?SYSTEM_NAME:8, Length:8, Value2:Length/bytes>>;
 encode_pdu(#domain{ value = Value }) ->
-%%    Value2 = encode_string(Value),
-    Value2 = Value,
-    Length = byte_size(Value2),
-    <<?DOMAIN:8, Length:8, Value2:Length/bytes>>;
+    <<?DOMAIN:8, 2:8, Value:2/bytes>>;
 encode_pdu(#noderole{value = Value}) ->
 
     <<?NODEROLE:8, 1:8, Value:8>>;
