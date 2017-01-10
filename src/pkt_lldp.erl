@@ -63,6 +63,7 @@ decode(<<?SYSTEM_NAME:8, Length:8,
 decode(<<?DOMAIN:8, 2:8,
          Value:16, Rest/bytes>>, Acc) ->
     Pdu = #domain{ value = Value },
+
     decode(Rest, [Pdu | Acc]);
 decode(<<?NODEROLE:8, _Length:8, Value:8, Rest/bytes>>, Acc) ->
     Pdu = #noderole{value = Value},
