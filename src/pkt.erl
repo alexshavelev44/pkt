@@ -138,6 +138,10 @@ decapsulate_next({ipv6, Data}, Headers) ->
     {Header, Payload} = ipv6(Data),
     decapsulate_next({next(Header), Payload}, [Header|Headers]);
 
+decapsulate_next({ipv6_ib, Data} , Headers) ->
+    {Header, Payload} = ipv6_ib(Data),
+    decapsulate_next({next(Header), Payload}, [Header|Headers]);
+
 decapsulate_next({ipv6_ah, Data}, Headers) ->
     {Header, Payload} = ipv6_ah(Data),
     decapsulate_next({next(Header), Payload}, [Header|Headers]);
@@ -283,7 +287,8 @@ next(#ipv6_dstopts{next = Next}) -> ipproto(Next);
 next(#ipv6_esp{next = Next}) -> ipproto(Next);
 next(#ipv6_fragment{next = Next}) -> ipproto(Next);
 next(#ipv6_hopopts{next = Next}) -> ipproto(Next);
-next(#ipv6_routing{next = Next}) -> ipproto(Next).
+next(#ipv6_routing{next = Next}) -> ipproto(Next);
+next(#ipv6_ib{next = Next}) -> ipproto(Next).
 
 %% BSD loopback
 null(N) ->
@@ -339,6 +344,9 @@ ipv6_hopopts(N) ->
     pkt_ipv6_hopopts:codec(N).
 ipv6_routing(N) ->
     pkt_ipv6_routing:codec(N).
+
+ipv6_ib(N) ->
+  pkt_ipv6_ib:codec(N).
 
 %% GRE
 gre(N) ->

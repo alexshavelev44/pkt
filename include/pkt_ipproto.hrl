@@ -17,3 +17,4 @@
 -define(IPPROTO_NONE, 59).      % IPv6 no next header
 -define(IPPROTO_DSTOPTS, 60).   % IPv6 destination options
 -define(IPPROTO_MH, 135).       % IPv6 mobility header
+-define(IPPROTO_IB, 253).       % IPv6 IceBreaker

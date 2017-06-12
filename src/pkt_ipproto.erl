@@ -53,6 +53,7 @@ codec(?IPPROTO_FRAGMENT) -> ipv6_fragment;
 codec(?IPPROTO_NONE) -> ipv6_none;
 codec(?IPPROTO_DSTOPTS) -> ipv6_dstopts;
 codec(?IPPROTO_MH) -> ipv6_mh;
+codec(?IPPROTO_IB) -> ipv6_ib;
 
 codec(ip) -> ?IPPROTO_IP;
 codec(icmp) -> ?IPPROTO_ICMP;

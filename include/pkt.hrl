@@ -21,3 +21,4 @@
 -include("pkt_sctp.hrl").
 -include("pkt_tcp.hrl").
 -include("pkt_udp.hrl").
+-include("pkt_ipv6_ib.hrl").
