@@ -109,7 +109,7 @@ codec(#icmp6{
         type = ?ND_ROUTER_SOLICIT, code = Code, checksum = Checksum,
         res = Res
     }) ->
-    <<?ND_ROUTER_SOLICIT:8, Code:8, Checksum:16, Res:16>>;
+    <<?ND_ROUTER_SOLICIT:8, Code:8, Checksum:16, Res:32>>;
 
 % Router Advertisement Message
 codec(<<?ND_ROUTER_ADVERT:8, Code:8, Checksum:16, Hop:8, M:1, O:1, Res:6,
