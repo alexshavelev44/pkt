@@ -152,12 +152,12 @@ codec(<<?ND_NEIGHBOR_ADVERT:8, Code:8, Checksum:16,
     {#icmp6{
         type = ?ND_NEIGHBOR_ADVERT, code = Code, checksum = Checksum,
         r = R, s = S, o = O, res = Res,
-        saddr = {SA1,SA2,SA3,SA4,SA5,SA6,SA7,SA8}
+        daddr = {SA1,SA2,SA3,SA4,SA5,SA6,SA7,SA8}
     }, Payload};
 codec(#icmp6{
         type = ?ND_NEIGHBOR_ADVERT, code = Code, checksum = Checksum,
         r = R, s = S, o = O, res = Res,
-        saddr = {SA1,SA2,SA3,SA4,SA5,SA6,SA7,SA8}
+        daddr = {SA1,SA2,SA3,SA4,SA5,SA6,SA7,SA8}
     }) ->
     <<?ND_NEIGHBOR_ADVERT:8, Code:8, Checksum:16,
       R:1, S:1, O:1, Res:29,
