@@ -11,8 +11,15 @@
 -record(ipv6_ib, {
   next,
   len,
-  type,
-  flags,
   value,
-  null_bytes = <<>>
+  null_bytes = <<>>,
+  auth = <<>>,
+  path = <<>>,
+  prg_data = <<>>,
+  instructions = <<>>
 }).
+
+-define(AUTH, 144).
+-define(PATH, 145).
+-define(PRG_DATA, 146).
+-define(INSTRUCTIONS, 147).
