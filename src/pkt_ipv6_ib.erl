@@ -25,7 +25,7 @@ codec(<<Next:8, Len:8, PayloadPre/binary>>) ->
 
   IBPre = #ipv6_ib{next = Next, len = Len, value = Value},
 
-  IB = get_chunks(Payload, IBPre),
+  IB = get_chunks(Value, IBPre),
 
   {IB, Payload};
 
