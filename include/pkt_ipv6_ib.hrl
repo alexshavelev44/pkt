@@ -19,7 +19,7 @@
   instructions = <<>>
 }).
 
--define(AUTH, 144).
--define(PATH, 145).
--define(PRG_DATA, 146).
--define(INSTRUCTIONS, 147).
+-define(AUTH1, 144).
+-define(PATH1, 145).
+-define(PRG_DATA1, 146).
+-define(INSTRUCTIONS1, 147).
