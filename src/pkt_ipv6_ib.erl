@@ -16,6 +16,7 @@
   codec/1
 ]).
 
+-define(RECORD_TO_TUPLELIST(Rec, Ref), lists:zip(record_info(fields, Rec),tl(tuple_to_list(Ref)))).
 
 
 codec(<<Next:8, Len:8, PayloadPre/binary>>) ->
@@ -30,11 +31,58 @@ codec(<<Next:8, Len:8, PayloadPre/binary>>) ->
   {IB, Payload};
 
 
-codec(#ipv6_ib{next = Next, value = Value, null_bytes = NullBytes}) ->
+codec(#ipv6_ib{next = Next} = Rec) ->
 
-  %% ALL TO TODO
+  Value = fold_ib_header(?RECORD_TO_TUPLELIST(ipv6_ib, Rec)),
 
-  <<Next:8, Value/bytes, NullBytes/bytes>>.
+  Len = (byte_size(Value) - 8) div 8,
+
+  <<Next:8, Len:8, Value/bytes>>.
+
+
+fold_ib_header(List) -> fold_ib_header(List, <<>>).
+
+fold_ib_header([{auth, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
+fold_ib_header([{auth, Value} | Rest], Acc) ->
+  Len = byte_size(Value),
+  fold_ib_header(Rest, <<Acc/bytes, ?AUTH1:6, Len:10, Value/bytes>>);
+
+fold_ib_header([{path, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
+fold_ib_header([{path, Value} | Rest], Acc) ->
+  Len = byte_size(Value),
+  fold_ib_header(Rest, <<Acc/bytes, ?PATH1:6, Len:10, Value/bytes>>);
+
+fold_ib_header([{prg_data, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
+fold_ib_header([{prg_data, Value} | Rest], Acc) ->
+  Len = byte_size(Value),
+  fold_ib_header(Rest, <<Acc/bytes, ?PRG_DATA1:6, Len:10, Value/bytes>>);
+
+fold_ib_header([{instructions, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
+fold_ib_header([{instructions, Value} | Rest], Acc) ->
+  Len = byte_size(Value),
+  fold_ib_header(Rest, <<Acc/bytes, ?INSTRUCTIONS1:6, Len:10, Value/bytes>>);
+
+fold_ib_header([{_, _} | Rest], Acc) -> fold_ib_header(Rest, Acc);
+
+fold_ib_header([], Acc) ->
+  NullBytesSize = padding_to_eight_bytes(byte_size(Acc)),
+  NullBits = NullBytesSize * 8,
+  NullBytes = <<0:NullBits>>,
+  <<Acc/bytes, NullBytes/bytes>>.
+
+
+
+
+
+padding_bytes(0) -> 0;
+padding_bytes(Diff) -> 8 - Diff.
+
+
+padding_to_eight_bytes(Len) ->
+  Padding = Len rem 8,
+  padding_bytes(Padding).
+
+
 
 get_chunks(<<?AUTH1:6, Len:10, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{auth = Chunk});
 get_chunks(<<?PATH1:6, Len:10, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{path = Chunk});
