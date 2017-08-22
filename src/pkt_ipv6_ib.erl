@@ -65,7 +65,7 @@ fold_ib_header([{instructions, Value} | Rest], Acc) ->
 fold_ib_header([{_, _} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 
 fold_ib_header([], Acc) ->
-  NullBytesSize = padding_to_eight_bytes(byte_size(Acc)),
+  NullBytesSize = padding_to_eight_bytes(byte_size(Acc + 2)),
   NullBits = NullBytesSize * 8,
   NullBytes = <<0:NullBits>>,
   <<Acc/bytes, NullBytes/bytes>>.
