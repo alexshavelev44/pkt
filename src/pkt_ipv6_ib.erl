@@ -35,7 +35,7 @@ codec(#ipv6_ib{next = Next} = Rec) ->
 
   Value = fold_ib_header(?RECORD_TO_TUPLELIST(ipv6_ib, Rec)),
 
-  Len = (byte_size(Value) - 8) div 8,
+  Len = byte_size(Value) div 8,
 
   <<Next:8, Len:8, Value/bytes>>.
 
