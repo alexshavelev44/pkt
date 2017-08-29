@@ -45,22 +45,22 @@ fold_ib_header(List) -> fold_ib_header(List, <<>>).
 fold_ib_header([{auth, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 fold_ib_header([{auth, Value} | Rest], Acc) ->
   Len = byte_size(Value),
-  fold_ib_header(Rest, <<Acc/bytes, ?AUTH1:6, Len:10, Value/bytes>>);
+  fold_ib_header(Rest, <<Acc/bytes, ?AUTH1:4, Len:12, Value/bytes>>);
 
 fold_ib_header([{path, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 fold_ib_header([{path, Value} | Rest], Acc) ->
   Len = byte_size(Value),
-  fold_ib_header(Rest, <<Acc/bytes, ?PATH1:6, Len:10, Value/bytes>>);
+  fold_ib_header(Rest, <<Acc/bytes, ?PATH1:4, Len:12, Value/bytes>>);
 
 fold_ib_header([{prg_data, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 fold_ib_header([{prg_data, Value} | Rest], Acc) ->
   Len = byte_size(Value),
-  fold_ib_header(Rest, <<Acc/bytes, ?PRG_DATA1:6, Len:10, Value/bytes>>);
+  fold_ib_header(Rest, <<Acc/bytes, ?PRG_DATA1:4, Len:12, Value/bytes>>);
 
 fold_ib_header([{instructions, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 fold_ib_header([{instructions, Value} | Rest], Acc) ->
   Len = byte_size(Value),
-  fold_ib_header(Rest, <<Acc/bytes, ?INSTRUCTIONS1:6, Len:10, Value/bytes>>);
+  fold_ib_header(Rest, <<Acc/bytes, ?INSTRUCTIONS1:4, Len:12, Value/bytes>>);
 
 fold_ib_header([{_, _} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 
@@ -86,10 +86,10 @@ padding_to_eight_bytes(Len) ->
 
 
 
-get_chunks(<<?AUTH1:6, Len:10, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{auth = Chunk});
-get_chunks(<<?PATH1:6, Len:10, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{path = Chunk});
-get_chunks(<<?PRG_DATA1:6, Len:10, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{prg_data = Chunk});
-get_chunks(<<?INSTRUCTIONS1:6, Len:10, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{instructions = Chunk});
+get_chunks(<<?AUTH1:4, Len:12, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{auth = Chunk});
+get_chunks(<<?PATH1:4, Len:12, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{path = Chunk});
+get_chunks(<<?PRG_DATA1:4, Len:12, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{prg_data = Chunk});
+get_chunks(<<?INSTRUCTIONS1:4, Len:12, Chunk:Len/bytes, Rest/bytes>>, IB) -> get_chunks(Rest, IB#ipv6_ib{instructions = Chunk});
 get_chunks(<<>>, IB) -> IB;
 get_chunks(<<0:8, _/bytes>> = Padding, IB) -> IB#ipv6_ib{null_bytes = Padding}.
 
