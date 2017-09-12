@@ -14,9 +14,13 @@
   value,
   null_bytes = <<>>,
   auth = <<>>,
+  auth_len = 0,
   path = <<>>,
+  path_len = 0,
   prg_data = <<>>,
-  instructions = <<>>
+  prg_data_len = 0,
+  instructions = <<>>,
+  instructions_len = 0
 }).
 
 -define(AUTH1, 1).
