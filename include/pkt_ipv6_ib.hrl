@@ -17,10 +17,10 @@
   auth_len = 0,
   path = <<>>,
   path_len = 0,
-  prg_data = <<>>,
-  prg_data_len = 0,
   instructions = <<>>,
-  instructions_len = 0
+  instructions_len = 0,
+  prg_data = <<>>,
+  prg_data_len = 0
 }).
 
 -define(AUTH1, 1).
