@@ -52,15 +52,15 @@ fold_ib_header([{path, Value} | Rest], Acc) ->
   Len = byte_size(Value),
   fold_ib_header(Rest, <<Acc/bytes, ?PATH1:4, Len:12, Value/bytes>>);
 
-fold_ib_header([{prg_data, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
-fold_ib_header([{prg_data, Value} | Rest], Acc) ->
-  Len = byte_size(Value),
-  fold_ib_header(Rest, <<Acc/bytes, ?PRG_DATA1:4, Len:12, Value/bytes>>);
-
 fold_ib_header([{instructions, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 fold_ib_header([{instructions, Value} | Rest], Acc) ->
   Len = byte_size(Value),
   fold_ib_header(Rest, <<Acc/bytes, ?INSTRUCTIONS1:4, Len:12, Value/bytes>>);
+
+fold_ib_header([{prg_data, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
+fold_ib_header([{prg_data, Value} | Rest], Acc) ->
+  Len = byte_size(Value),
+  fold_ib_header(Rest, <<Acc/bytes, ?PRG_DATA1:4, Len:12, Value/bytes>>);
 
 fold_ib_header([{_, _} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 
