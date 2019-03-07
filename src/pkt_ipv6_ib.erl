@@ -62,6 +62,12 @@ fold_ib_header([{prg_data, Value} | Rest], Acc) ->
   Len = byte_size(Value),
   fold_ib_header(Rest, <<Acc/bytes, ?PRG_DATA1:4, Len:12, Value/bytes>>);
 
+fold_ib_header([{control, <<>>} | Rest], Acc) -> fold_ib_header(Rest, Acc);
+fold_ib_header([{control, Value} | Rest], Acc) ->
+  Len = byte_size(Value),
+  fold_ib_header(Rest, <<Acc/bytes, ?CONTROL:4, Len:12, Value/bytes>>);
+
+
 fold_ib_header([{_, _} | Rest], Acc) -> fold_ib_header(Rest, Acc);
 
 fold_ib_header([], Acc) ->
@@ -94,6 +100,8 @@ get_chunks(<<?PRG_DATA1:4, Len:12, Chunk:Len/bytes, Rest/bytes>>, IB) ->
   get_chunks(Rest, IB#ipv6_ib{prg_data = Chunk, prg_data_len = Len + 2});
 get_chunks(<<?INSTRUCTIONS1:4, Len:12, Chunk:Len/bytes, Rest/bytes>>, IB) ->
   get_chunks(Rest, IB#ipv6_ib{instructions = Chunk, instructions_len = Len + 2});
+get_chunks(<<?CONTROL:4, Len:12, Chunk:Len/bytes, Rest/bytes>>, IB) ->
+  get_chunks(Rest, IB#ipv6_ib{control = Chunk, control_len = Len + 2});
 get_chunks(<<>>, IB) ->
   IB;
 get_chunks(<<0:8, _/bytes>> = Padding, IB) ->

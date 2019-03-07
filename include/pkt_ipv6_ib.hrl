@@ -20,10 +20,13 @@
   instructions = <<>>,
   instructions_len = 0,
   prg_data = <<>>,
-  prg_data_len = 0
+  prg_data_len = 0,
+  control = <<>>,
+  control_len = 0
 }).
 
 -define(AUTH1, 1).
 -define(PATH1, 2).
 -define(PRG_DATA1, 4).
 -define(INSTRUCTIONS1, 3).
+-define(CONTROL, 5).
